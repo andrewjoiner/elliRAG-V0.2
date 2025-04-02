@@ -1,0 +1,1 @@
+vc-domain-verify=elli.nvend.io,417d91d4ae7c3acfe04e
