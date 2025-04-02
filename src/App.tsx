@@ -9,7 +9,7 @@ import Home from "./components/pages/home";
 import AccountManagement from "./components/dashboard/AccountManagement";
 import { AuthProvider, useAuth } from "./auth";
 import { Toaster } from "./components/ui/toaster";
-import { SupabaseConnectionTest } from "./components/SupabaseConnectionTest";
+import SupabaseDebug from "./components/SupabaseDebug";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -60,7 +60,6 @@ function AppRoutes() {
         {import.meta.env.VITE_TEMPO === "true" && <Route path="/tempobook/*" />}
       </Routes>
       {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-      <SupabaseConnectionTest />
     </>
   );
 }
