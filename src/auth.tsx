@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "./supabase/supabase";
+import { supabase, enhancedSupabase } from "./supabase/supabase";
 
 type AuthContextType = {
   user: User | null;
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const getSession = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await enhancedSupabase.auth.getSession();
         if (error) {
           console.error("Error getting session:", error);
         } else {
@@ -58,7 +58,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Sign up with email and password
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
+      console.log("Starting signup with enhanced client", { email, fullName });
+      const { data, error } = await enhancedSupabase.auth.signUp({
         email,
         password,
         options: {
@@ -68,7 +69,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Enhanced signup error:", error);
+        throw error;
+      }
+
+      console.log("Enhanced signup successful:", data);
       return data;
     } catch (error) {
       console.error("Error in signUp:", error);
@@ -79,7 +85,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Sign in with email and password
   const signIn = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await enhancedSupabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -95,7 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Sign out
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await enhancedSupabase.auth.signOut();
       if (error) throw error;
       setUser(null);
       setSession(null);

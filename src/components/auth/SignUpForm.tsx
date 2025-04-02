@@ -40,12 +40,40 @@ export default function SignUpForm() {
     try {
       console.log("Starting signup process with:", { email, fullName });
       let signupSuccess = false;
+      let signupAttempts = 0;
+      const maxAttempts = 3;
+      let lastError = null;
 
-      // Try to use the auth-debug edge function first
-      try {
-        console.log("Attempting signup via edge function");
-        // Try direct function name first
+      // Try direct signup first with multiple attempts
+      while (!signupSuccess && signupAttempts < maxAttempts) {
+        signupAttempts++;
         try {
+          console.log(`Direct signup attempt ${signupAttempts}/${maxAttempts}`);
+          const result = await signUp(email, password, fullName);
+          console.log("Direct signup result:", result);
+
+          if (result && (result.user || result.session)) {
+            signupSuccess = true;
+            console.log("Direct signup successful");
+            break;
+          }
+        } catch (err) {
+          lastError = err;
+          console.log(`Attempt ${signupAttempts} failed:`, err);
+          // Wait before retry
+          if (signupAttempts < maxAttempts) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+        }
+      }
+
+      // If direct signup failed, try edge function
+      if (!signupSuccess) {
+        console.log(
+          "Direct signup failed after multiple attempts, trying edge function",
+        );
+        try {
+          // Try direct function name first
           const { data, error } = await supabase.functions.invoke(
             "auth-debug",
             {
@@ -60,55 +88,38 @@ export default function SignUpForm() {
 
           if (data && data.success) {
             signupSuccess = true;
-            console.log("Direct function signup successful");
-            return data;
+            console.log("Edge function signup successful");
           }
         } catch (directError) {
           console.log(
             "Direct function call failed, trying with prefix:",
             directError,
           );
-          // Continue to fallback with prefixed name
-        }
 
-        // Try with prefixed function name
-        const { data, error } = await supabase.functions.invoke(
-          "supabase-functions-auth-debug",
-          {
-            body: { action: "create_user", email, password, fullName },
-          },
-        );
+          try {
+            // Try with prefixed function name
+            const { data, error } = await supabase.functions.invoke(
+              "supabase-functions-auth-debug",
+              {
+                body: { action: "create_user", email, password, fullName },
+              },
+            );
 
-        if (error) {
-          console.error("Edge function error:", error);
-          throw error;
-        }
+            if (error) {
+              console.error("Edge function error:", error);
+              throw error;
+            }
 
-        console.log("Edge function signup result:", data);
+            console.log("Edge function signup result:", data);
 
-        if (data && data.success) {
-          signupSuccess = true;
-          console.log("Edge function signup successful");
-        }
-      } catch (edgeFnError) {
-        console.log(
-          "Edge function failed, falling back to direct signup",
-          edgeFnError,
-        );
-        // Continue to fallback method
-      }
-
-      // Fallback: Direct signup with Supabase client if edge function failed
-      if (!signupSuccess) {
-        console.log("Attempting direct Supabase signup");
-        const result = await signUp(email, password, fullName);
-        console.log("Direct signup result:", result);
-
-        if (result && (result.user || result.session)) {
-          signupSuccess = true;
-          console.log("Direct signup successful");
-        } else {
-          throw new Error("Failed to create account through both methods");
+            if (data && data.success) {
+              signupSuccess = true;
+              console.log("Edge function signup successful");
+            }
+          } catch (prefixError) {
+            console.error("Prefixed function call also failed:", prefixError);
+            lastError = prefixError;
+          }
         }
       }
 
@@ -121,6 +132,10 @@ export default function SignUpForm() {
 
         // Navigate to success page
         navigate("/success", { state: { email } });
+      } else {
+        throw (
+          lastError || new Error("Failed to create account through all methods")
+        );
       }
     } catch (error: any) {
       console.error("SignUp error:", error);
@@ -142,6 +157,12 @@ export default function SignUpForm() {
       }
 
       setError(errorMessage);
+
+      toast({
+        title: "Signup Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
