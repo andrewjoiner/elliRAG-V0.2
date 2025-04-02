@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+const supabaseUrl =
+  import.meta.env.VITE_SUPABASE_URL ||
+  "https://obrkolpufyshzcoajwyo.supabase.co";
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 // Add more detailed logging to help diagnose the issue
@@ -50,7 +52,7 @@ export const testSupabaseConnection = async () => {
   try {
     console.log("Testing Supabase connection...");
     const { data, error } = await supabase
-      .from("user_profiles")
+      .from("profiles")
       .select("count", { count: "exact", head: true });
 
     if (error) {

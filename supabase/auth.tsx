@@ -13,8 +13,10 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Export as a named export for consistent component exports
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+// Define component with React.FC
+const AuthProviderComponent: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,11 +119,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Export as a named export for consistent component exports
-export const useAuth = () => {
+// Export the component directly
+export const AuthProvider = AuthProviderComponent;
+
+// Define hook as a named function expression
+const useAuthHook = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
+
+// Export the hook
+export const useAuth = useAuthHook;
