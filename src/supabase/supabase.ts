@@ -13,11 +13,16 @@ export const testSupabaseConnection = async () => {
       .from("profiles")
       .select("*")
       .limit(1);
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase connection error:", error);
+      return { success: false, error: error.message || JSON.stringify(error) };
+    }
     console.log("Supabase connection successful:", data);
     return { success: true, data };
   } catch (error) {
     console.error("Supabase connection error:", error);
-    return { success: false, error };
+    const errorMessage =
+      error instanceof Error ? error.message : JSON.stringify(error);
+    return { success: false, error: errorMessage };
   }
 };
