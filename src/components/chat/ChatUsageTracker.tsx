@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../../supabase/auth";
-import { supabase } from "../../../supabase/supabase";
+import { useAuth } from "@/auth";
+import { supabase } from "@/supabase/supabase";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ChatUsageTrackerProps {

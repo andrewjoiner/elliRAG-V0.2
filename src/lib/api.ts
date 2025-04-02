@@ -1,4 +1,4 @@
-import { supabase } from "../../supabase/supabase";
+import { supabase } from "@/supabase/supabase";
 import { RagSettings } from "@/components/chat/RagControls";
 
 export interface Message {

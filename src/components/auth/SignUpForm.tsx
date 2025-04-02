@@ -14,7 +14,7 @@ import { useNavigate, Link } from "react-router-dom";
 import AuthLayout from "./AuthLayout";
 import { UserPlus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "../../../supabase/supabase";
+import { supabase } from "@/supabase/supabase";
 
 export default function SignUpForm() {
   const [email, setEmail] = useState("");

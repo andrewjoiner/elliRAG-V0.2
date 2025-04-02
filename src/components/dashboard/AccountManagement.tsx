@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../../supabase/auth";
+import { useAuth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { UserProfile } from "./UserProfile";
-import { supabase } from "../../../supabase/supabase";
+import { supabase } from "@/supabase/supabase";
 import { getUsageStats, UsageStats } from "@/lib/user";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
