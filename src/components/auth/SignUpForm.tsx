@@ -22,7 +22,7 @@ export default function SignUpForm() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp, signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -45,7 +45,7 @@ export default function SignUpForm() {
       try {
         console.log("Trying direct-signup edge function");
         const { data, error } = await supabase.functions.invoke(
-          "direct-signup",
+          "supabase-functions-direct-signup",
           {
             body: { email, password, fullName },
           },

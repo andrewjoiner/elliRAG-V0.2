@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../types/supabase";
 
 // Get environment variables with fallbacks
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+const supabaseUrl = "https://obrkolpufyshzcoajwyo.supabase.co";
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 // Log connection details for debugging
