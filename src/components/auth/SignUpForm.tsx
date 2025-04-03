@@ -44,8 +44,9 @@ export default function SignUpForm() {
       // Try our new direct-signup edge function first
       try {
         console.log("Trying direct-signup edge function");
+        // Force using the correct function name without prefix
         const { data, error } = await supabase.functions.invoke(
-          "supabase-functions-direct-signup",
+          "direct-signup",
           {
             body: { email, password, fullName },
           },
