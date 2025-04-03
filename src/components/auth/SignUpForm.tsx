@@ -15,6 +15,8 @@ import AuthLayout from "./AuthLayout";
 import { UserPlus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/supabase/supabase";
+// Get the anon key for direct API calls
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export default function SignUpForm() {
   const [email, setEmail] = useState("");
@@ -44,13 +46,23 @@ export default function SignUpForm() {
       // Try our new direct-signup edge function first
       try {
         console.log("Trying direct-signup edge function");
-        // Force using the correct function name without prefix
-        const { data, error } = await supabase.functions.invoke(
-          "direct-signup",
+        // Force using the hardcoded URL to the correct Supabase project
+        const response = await fetch(
+          "https://obrkolpufyshzcoajwyo.supabase.co/functions/v1/direct-signup",
           {
-            body: { email, password, fullName },
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${supabaseAnonKey}`,
+            },
+            body: JSON.stringify({ email, password, fullName }),
           },
         );
+
+        const data = await response.json();
+        const error = !response.ok
+          ? new Error(data.error || "Signup failed")
+          : null;
 
         if (error) {
           console.error("Direct-signup function error:", error);

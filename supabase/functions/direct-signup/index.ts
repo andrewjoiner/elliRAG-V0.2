@@ -8,85 +8,63 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // This is needed if you're planning to invoke your function from a browser.
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // Get the Supabase URL and key from environment variables
+    console.log("Function invoked with URL:", req.url);
+
+    // Get request body
+    const { email, password, fullName } = await req.json();
+
+    if (!email || !password || !fullName) {
+      throw new Error("Email, password, and full name are required");
+    }
+
+    // Create a Supabase client with the Admin key
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error("Missing Supabase credentials");
-    }
+    console.log("Using Supabase URL:", supabaseUrl);
 
-    // Create Supabase client with admin privileges
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    const supabaseAdmin = createClient(supabaseUrl ?? "", supabaseKey ?? "", {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
       },
     });
 
-    // Parse request body
-    const { email, password, fullName } = await req.json();
-
-    if (!email || !password || !fullName) {
-      throw new Error("Missing required fields: email, password, or fullName");
-    }
-
-    // First check if user exists
-    const { data: existingUsers, error: checkError } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("email", email)
-      .limit(1);
-
-    if (checkError) {
-      console.error("Error checking existing user:", checkError);
-    }
-
-    if (existingUsers && existingUsers.length > 0) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "User with this email already exists",
-        }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400,
-        },
-      );
-    }
-
-    // Create user with admin privileges
-    const { data: userData, error: userError } =
-      await supabase.auth.admin.createUser({
+    // Create user
+    const { data: userData, error: createUserError } =
+      await supabaseAdmin.auth.admin.createUser({
         email,
         password,
-        email_confirm: true, // Auto-confirm email
+        email_confirm: true,
         user_metadata: { full_name: fullName },
       });
 
-    if (userError) {
-      console.error("Error creating user:", userError);
-      throw userError;
+    if (createUserError) {
+      throw createUserError;
     }
 
-    // Create user profile
-    if (userData.user) {
-      const { error: profileError } = await supabase.from("profiles").insert({
+    if (!userData.user) {
+      throw new Error("Failed to create user");
+    }
+
+    // Create profile entry
+    const { error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .insert({
         id: userData.user.id,
-        email: email,
         full_name: fullName,
-        role: "free",
+        email: email,
       });
 
-      if (profileError) {
-        console.error("Error creating user profile:", profileError);
-      }
+    if (profileError) {
+      console.error("Error creating profile:", profileError);
+      // Continue anyway as the user was created
     }
 
     return new Response(
@@ -100,16 +78,15 @@ serve(async (req) => {
       },
     );
   } catch (error) {
-    console.error("Error in direct-signup function:", error);
-
+    console.error("Error in direct-signup:", error);
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message || "Internal server error",
+        error: error.message,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
+        status: 400,
       },
     );
   }
