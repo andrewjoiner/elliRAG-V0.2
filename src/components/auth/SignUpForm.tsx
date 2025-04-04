@@ -46,23 +46,13 @@ export default function SignUpForm() {
       // Try our new direct-signup edge function first
       try {
         console.log("Trying direct-signup edge function");
-        // Force using the hardcoded URL to the correct Supabase project
-        const response = await fetch(
-          "https://obrkolpufyshzcoajwyo.supabase.co/functions/v1/direct-signup",
+        // Use the Supabase client to invoke the function
+        const { data, error } = await supabase.functions.invoke(
+          "direct-signup",
           {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${supabaseAnonKey}`,
-            },
-            body: JSON.stringify({ email, password, fullName }),
+            body: { email, password, fullName },
           },
         );
-
-        const data = await response.json();
-        const error = !response.ok
-          ? new Error(data.error || "Signup failed")
-          : null;
 
         if (error) {
           console.error("Direct-signup function error:", error);
@@ -90,42 +80,28 @@ export default function SignUpForm() {
           directSignupError,
         );
 
-        // Try standard signup
+        // Skip standard signup and try auth-debug function as last resort
         try {
-          console.log("Trying standard signup");
-          const result = await signUp(email, password, fullName);
-          console.log("Standard signup result:", result);
+          console.log("Trying auth-debug function");
+          const { data, error } = await supabase.functions.invoke(
+            "supabase-functions-auth-debug",
+            {
+              body: { action: "create_user", email, password, fullName },
+            },
+          );
 
-          if (result && (result.user || result.session)) {
+          if (error) {
+            console.error("Auth-debug function error:", error);
+            throw error;
+          }
+
+          if (data && data.success) {
             signupSuccess = true;
-            console.log("Standard signup successful");
+            console.log("Auth-debug function signup successful");
           }
-        } catch (standardError) {
-          console.log("Standard signup failed:", standardError);
-
-          // Try auth-debug function as last resort
-          try {
-            console.log("Trying auth-debug function");
-            const { data, error } = await supabase.functions.invoke(
-              "supabase-functions-auth-debug",
-              {
-                body: { action: "create_user", email, password, fullName },
-              },
-            );
-
-            if (error) {
-              console.error("Auth-debug function error:", error);
-              throw error;
-            }
-
-            if (data && data.success) {
-              signupSuccess = true;
-              console.log("Auth-debug function signup successful");
-            }
-          } catch (authDebugError) {
-            console.error("All signup methods failed", authDebugError);
-            throw authDebugError;
-          }
+        } catch (authDebugError) {
+          console.error("All signup methods failed", authDebugError);
+          throw authDebugError;
         }
       }
 

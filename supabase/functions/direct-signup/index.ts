@@ -5,6 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 serve(async (req) => {
@@ -25,11 +26,18 @@ serve(async (req) => {
 
     // Create a Supabase client with the Admin key
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_KEY");
 
     console.log("Using Supabase URL:", supabaseUrl);
+    console.log("Service key available:", !!supabaseKey);
 
-    const supabaseAdmin = createClient(supabaseUrl ?? "", supabaseKey ?? "", {
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error(
+        "Supabase credentials not found. Please check environment variables.",
+      );
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
