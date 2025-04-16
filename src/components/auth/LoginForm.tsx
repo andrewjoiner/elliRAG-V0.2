@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,13 +17,20 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/supabase/supabase";
 
 export default function LoginForm() {
+:start_line:20
+-------
+  const { user, signIn } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,6 +108,7 @@ export default function LoginForm() {
             description: "Welcome back to elli!",
             variant: "default",
           });
+          await signIn(email, password);
           navigate("/dashboard");
           return;
         }
