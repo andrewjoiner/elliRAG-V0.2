@@ -20,11 +20,6 @@ export default function LoginForm() {
   const { user, signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [user, navigate]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -71,7 +66,7 @@ export default function LoginForm() {
               description: "Welcome back to elli!",
               variant: "default",
             });
-            navigate("/dashboard");
+            window.location.href = '/dashboard';
             return;
           }
         } catch (directError) {
@@ -107,7 +102,7 @@ export default function LoginForm() {
             variant: "default",
           });
           await signIn(email, password);
-          navigate("/dashboard");
+          window.location.href = '/dashboard';
           return;
         }
       } catch (edgeFnError) {
@@ -133,7 +128,7 @@ export default function LoginForm() {
             description: "Welcome back to elli!",
             variant: "default",
           });
-          navigate("/dashboard");
+          window.location.href = '/dashboard';
         } else {
           throw new Error("Failed to sign in. Please check your credentials.");
         }
