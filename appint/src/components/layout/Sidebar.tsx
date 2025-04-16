@@ -68,7 +68,7 @@ const Sidebar = ({
             <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
               <MessageSquare size={18} className="text-primary-foreground" />
             </div>
-            <h1 className="font-semibold text-lg">RAG Chat</h1>
+            <h1 className="font-semibold text-lg">elli</h1>
           </div>
         )}
         {collapsed && (
