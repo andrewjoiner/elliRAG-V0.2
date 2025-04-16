@@ -17,8 +17,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/supabase/supabase";
 
 export default function LoginForm() {
-:start_line:20
--------
   const { user, signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
