@@ -65,15 +65,15 @@ const Sidebar = ({
       <div className="flex items-center justify-between p-4">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-              <MessageSquare size={18} className="text-primary-foreground" />
+            <div className="h-8 w-8">
+              <img src="/elli-icon.svg" alt="elli icon" className="h-8 w-8" />
             </div>
             <h1 className="font-semibold text-lg">elli</h1>
           </div>
         )}
         {collapsed && (
-          <div className="h-8 w-8 mx-auto rounded-md bg-primary flex items-center justify-center">
-            <MessageSquare size={18} className="text-primary-foreground" />
+          <div className="h-8 w-8 mx-auto">
+            <img src="/elli-icon.svg" alt="elli icon" className="h-8 w-8" />
           </div>
         )}
         {!collapsed && (
