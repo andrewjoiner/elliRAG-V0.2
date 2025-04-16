@@ -1,15 +1,9 @@
-import DocumentManager from "../../../src/components/chat/DocumentManager";
-import { Card } from "@/components/ui/card";
-import AuthLayout from "../../../src/components/auth/AuthLayout";
+import DocumentManager from "@/components/chat/DocumentManager";
 
 export default function DocumentsPage() {
   return (
-    <AuthLayout>
-      <div className="w-full max-w-md mx-auto mt-8">
-        <Card className="w-full">
-          <DocumentManager />
-        </Card>
-      </div>
-    </AuthLayout>
+    <div className="max-w-4xl mx-auto mt-8 p-4">
+      <DocumentManager />
+    </div>
   );
 }
