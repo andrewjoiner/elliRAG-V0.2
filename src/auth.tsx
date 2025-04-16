@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const getSession = async () => {
       setLoading(true);
       try {
-        const { data, error } = await enhancedSupabase.auth.getSession();
+        const { data, error } = await supabase.auth.getSession();
         if (error) {
           console.error("Error getting session:", error);
         } else {
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
       console.log("Starting signup with enhanced client", { email, fullName });
-      const { data, error } = await enhancedSupabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Sign in with email and password
   const signIn = async (email: string, password: string) => {
     try {
-      const { data, error } = await enhancedSupabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Sign out
   const signOut = async () => {
     try {
-      const { error } = await enhancedSupabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setUser(null);
       setSession(null);

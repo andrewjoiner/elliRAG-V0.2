@@ -31,7 +31,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       "Content-Type": "application/json",
     },
   },
-});
+  functionsUrl: `${supabaseUrl}/functions/v1`
+} as any);
 
 // Create enhanced client (used in auth.tsx)
 export const enhancedSupabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -45,7 +46,8 @@ export const enhancedSupabase = createClient(supabaseUrl, supabaseAnonKey, {
       "Content-Type": "application/json",
     },
   },
-});
+  functionsUrl: `${supabaseUrl}/functions/v1`
+} as any);
 
 // Simple test function to verify connection
 export const testSupabaseConnection = async () => {
