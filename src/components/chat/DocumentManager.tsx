@@ -7,13 +7,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileUp, Folder, File, X, Plus, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Document,
+  Document as DocumentType,
   getDocuments,
   getCollections,
   uploadDocument,
   createCollection,
   deleteDocument,
-} from "@/lib/documents";
+} from "../../lib/documents";
 import {
   uploadDocumentToExternalAPI,
   uploadDocumentUrlToExternalAPI,
