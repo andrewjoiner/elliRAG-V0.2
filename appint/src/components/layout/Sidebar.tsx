@@ -66,14 +66,14 @@ const Sidebar = ({
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="h-8 w-8">
-              <img src="/elli-icon.svg" alt="elli icon" className="h-8 w-8" />
+              <img src="/elli%20Logo.svg" alt="elli icon" className="h-8 w-8" />
             </div>
             <h1 className="font-semibold text-lg">elli</h1>
           </div>
         )}
         {collapsed && (
           <div className="h-8 w-8 mx-auto">
-            <img src="/elli-icon.svg" alt="elli icon" className="h-8 w-8" />
+            <img src="/elli%20Logo.svg" alt="elli icon" className="h-8 w-8" />
           </div>
         )}
         {!collapsed && (
