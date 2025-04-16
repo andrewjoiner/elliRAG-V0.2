@@ -13,7 +13,7 @@ import {
   uploadDocument,
   createCollection,
   deleteDocument,
-} from "../../lib/documents";
+} from "@/lib/documents";
 import {
   uploadDocumentToExternalAPI,
   uploadDocumentUrlToExternalAPI,
